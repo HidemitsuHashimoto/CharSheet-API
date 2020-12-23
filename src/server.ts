@@ -2,9 +2,7 @@ import express from 'express'
 import connection from './database'
 
 import CharController from './char/CharController'
-import CharModel from './char/CharModel'
-
-import AttributeModel from './attributes/AttributeModel'
+import AttributeController from './attributes/AttributeController'
 
 connection
     .authenticate()
@@ -16,7 +14,7 @@ app.use(express.urlencoded({extended: false}))
 app.use(express.json())
 
 app.use('/char', CharController)
-
+app.use('/attribute', AttributeController)
 
 app.get('/', (req, res) => res.send('TESTE'))
 

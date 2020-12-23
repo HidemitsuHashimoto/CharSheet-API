@@ -1,7 +1,7 @@
 import {DataTypes} from 'sequelize'
-import database from 'database'
+import database from '../database'
 
-import Attributes from 'attributes/AttributeModel'
+import Attribute from '../attributes/AttributeModel'
 
 const Char = database.define('char', {
     name: {
@@ -14,8 +14,6 @@ const Char = database.define('char', {
         allowNull: false,
     },
 })
-
-Char.belongsToMany(Attributes, {through: 'char_attribute'})
 
 Char.sync()
 
