@@ -1,16 +1,14 @@
-import {Sequelize} from 'sequelize'
+import knex from 'knex'
 import dotenv from 'dotenv'
 
 dotenv.config()
 
-const connection = new Sequelize(
-    process.env.DATABASE,
-    process.env.DATABASE_USER,
-    process.env.DATABASE_PASSWORD,
-    {        
+export default knex({
+    client: 'mysql2',
+    connection: {
         host: process.env.DATABASE_HOST,
-        dialect: 'mysql'
+        user: process.env.DATABASE_USER,
+        password: process.env.DATABASE_PASSWORD,
+        database: process.env.DATABASE,
     }
-)
-
-export default connection
+})

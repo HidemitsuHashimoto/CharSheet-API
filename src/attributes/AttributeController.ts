@@ -1,11 +1,12 @@
 import {Router} from 'express'
 
-import Attribute from './AttributeModel'
+import knex from '../database'
 
 const router = Router()
 
 router.get('/', (req, res) => {
-    Attribute.findAll().then(attributes => {
+    knex.select().table('attribute')
+    .then(attributes => {
         if(!attributes) return res.status(400).json({
             data: [],
             success: false,
@@ -23,7 +24,7 @@ router.get('/', (req, res) => {
 router.post('/save', (req, res) => {
     const {title} = req.body
 
-    Attribute.create({title})
+    knex('attribute').insert({title})
         .then(() => res.status(200).json({
             success: true,
             message: 'Registro incluído com sucesso.'
