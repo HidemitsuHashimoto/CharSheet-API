@@ -5,27 +5,33 @@ import Char from '../char/CharModel'
 import Attribute from '../attributes/AttributeModel'
 
 const CharAttribute = database.define('char_attribute', {
-    charId: {
+    id: {
         type: DataTypes.INTEGER,
-        references: {
-            model: Char,
-            key: 'id'
-        }
-    },
-    attributeId: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: Attribute,
-            key: 'id'
-        }
-    },    
+        primaryKey: true,
+        autoIncrement: true,
+        allowNull: false,
+    },   
     value: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'O valor do attributo é obrigatório!'
+            },
+            notNull: {
+                msg: 'O valor do attributo é obrigatório!'
+            }
+        }
     }
 })
 
 Char.belongsToMany(Attribute, {through: CharAttribute})
 Attribute.belongsToMany(Char, {through: CharAttribute})
+CharAttribute.belongsTo(Char)
+CharAttribute.belongsTo(Attribute)
+Char.hasMany(CharAttribute)
+Attribute.hasMany(CharAttribute)
+
+CharAttribute.sync()
 
 export default CharAttribute

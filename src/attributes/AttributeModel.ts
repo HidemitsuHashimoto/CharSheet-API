@@ -7,6 +7,11 @@ const Attribute = database.define('attribute', {
     title: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'O título é obrigatório!'
+            },
+        }
     }
 })
 

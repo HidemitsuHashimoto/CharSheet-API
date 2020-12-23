@@ -22,12 +22,6 @@ router.get('/', (req, res) => {
 
 router.post('/save', (req, res) => {
     const {title} = req.body
-    
-    if(!title) return res.status(400).json({
-        data: [],
-        success: false,
-        message: 'O título é obrigatório!'
-    })
 
     Attribute.create({title})
         .then(() => res.status(200).json({
@@ -36,7 +30,7 @@ router.post('/save', (req, res) => {
         }))
         .catch(error => res.status(400).json({
             sucesso: false,
-            mensagem: error
+            mensagem: error.errors[0].message
         }))
 })
 
