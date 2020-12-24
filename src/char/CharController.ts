@@ -11,9 +11,12 @@ router.get('/', async (req, res) => {
         const chars = await knex('char').select()
 
         const newChars = await Promise.all(chars.map(async char => {
-            const attributes = await knex('char_attribute').select().where({
-                charId: char.id
-            })
+            const attributes = await knex('char_attribute')
+                .select()
+                .innerJoin('attribute', 'attribute.id', 'char_attribute.attributeId')
+                .where({
+                    charId: char.id
+                })
             return {...char, attributes}
         }))
         
