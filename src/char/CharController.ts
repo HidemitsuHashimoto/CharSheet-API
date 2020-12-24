@@ -6,19 +6,29 @@ import {AttributeToCreate} from '../types/attribute'
 
 const router = Router()
 
-router.get('/', (req, res) => {
-    knex.select().table('char').then(chars => {
-        console.log('chars', chars)
+router.get('/', async (req, res) => {
+    try{
+        const chars = await knex('char').select()
+
+        const newChars = await Promise.all(chars.map(async char => {
+            const attributes = await knex('char_attribute').select().where({
+                charId: char.id
+            })
+            return {...char, attributes}
+        }))
+        
         res.status(200).json({
-            data: chars,
+            data: newChars,
             success: true,
             message: ''
         })
-    }).catch(error => res.status(400).json({
-        data: [],
-        success: false,
-        message: error
-    }))
+    }catch(e) {
+        res.status(400).json({
+            data: [],
+            success: false,
+            message: e
+        })
+    }
 })
 
 router.post('/save', (req, res) => {
@@ -27,8 +37,6 @@ router.post('/save', (req, res) => {
         gender,
         attributes,
     } = req.body
-
-    console.log('TESTE', name,    gender,    attributes)
 
     const defaultResponse = {
         success: true,
@@ -62,46 +70,110 @@ router.post('/save', (req, res) => {
             })
         })    
 
-        knex.transaction(trx => {
-            trx('char').insert({name, gender})
-                .then(char => {        
-                    attributes.forEach((attribute: AttributeToCreate) => {
-                        const {attributeId, value} = attribute
-                        
-                        trx('char_attribute').insert({
-                            charId: char[0],
-                            attributeId,
-                            value: value ? value : 0,
-                        })
-                        .then(() => {
-                            trx.commit()
-                            res.json(defaultResponse)
-                        })
-                        .catch(error => {
-                                trx.rollback()
-                                res.status(201).json({
-                                ...defaultResponse,
-                                success: true,
-                                message: '',
-                                attributeResponse: {
-                                    ...defaultResponse.attributeResponse,
-                                    success: false,
-                                    message: error
-                                }
-                            })
-                        })
-                    })
+        knex.transaction(async trx => {
+            try{
+                const char = await trx('char').insert({name, gender})
+                
+                const newAttributes = attributes.map((attribute: AttributeToCreate) => {
+                    const {attributeId, value} = attribute            
+                    return {
+                        charId: char[0],
+                        attributeId,
+                        value: value ? value : 0,
+                    }    
                 })
-                .catch(error => res.status(400).json({
+                await trx('char_attribute').insert(newAttributes)
+                
+                res.json(defaultResponse)
+            }catch(e) {
+                trx.rollback()
+                res.status(400).json({
                     ...defaultResponse,
                     sucesso: false,
-                    mensagem: error.errors[0].message,
+                    mensagem: e.errors[0].message,
                     attributeResponse: {
                         ...defaultResponse.attributeResponse,
                         success: false,
                         message: '',
                     },
-                }))
+                })
+            }            
+        })
+})
+
+router.put('/edit', (req, res) => {
+    const {
+        id,
+        name,
+        gender,
+        attributes,
+    } = req.body
+
+    const defaultResponse = {
+        success: true,
+        message: 'Personagem atualizado com sucesso!',
+        attributeResponse: {
+            success: true, message: 'Attributos atualizados com sucesso!', sample: '',
+        }
+    }   
+
+    if(attributes && attributes.length > 0)
+        attributes.forEach((attribute: AttributeToCreate) => {
+            if(typeof attribute !== 'object' || Array.isArray(attribute)) return res.status(400).json({
+                ...defaultResponse,
+                success: true,
+                attributeResponse: {
+                    ...defaultResponse.attributeResponse,
+                    success: false,
+                    message: 'Formato do attributo incorreto.',
+                    sample: 'attributes: [{ attributeId: INTEGER, value: INTEGER }]',
+                },
+            })
+
+            if(!attribute.id) return res.status(400).json({
+                ...defaultResponse,
+                success: true,
+                attributeResponse: {
+                    ...defaultResponse.attributeResponse,
+                    success: false,
+                    message: 'O id do attributo é obrigatório!'
+                },
+            })
+        })
+
+        knex.transaction(async trx => {
+            try{
+                await trx('char')
+                    .where({id})
+                    .update({name, gender})
+                
+                const newAttributes = attributes.map(async (attribute: AttributeToCreate) => {
+                    const {id: charAttId, value} = attribute  
+
+                    const newValue = value ? value : 0    
+
+                    await knex('char_attribute')
+                        .where({id: charAttId})
+                        .update({value: newValue})
+                        .transacting(trx)
+                })
+
+                await Promise.all(newAttributes)
+                
+                res.json(defaultResponse)
+            }catch(e) {
+                trx.rollback()
+                res.status(400).json({
+                    ...defaultResponse,
+                    sucesso: false,
+                    mensagem: e.errors[0].message,
+                    attributeResponse: {
+                        ...defaultResponse.attributeResponse,
+                        success: false,
+                        message: '',
+                    },
+                })
+            }            
         })
 })
 

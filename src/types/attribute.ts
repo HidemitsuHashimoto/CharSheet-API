@@ -1,4 +1,5 @@
 export interface AttributeToCreate {
+    id: number;
     attributeId: number;
     value: number;
 }
