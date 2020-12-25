@@ -76,16 +76,26 @@ router.post('/save', (req, res) => {
         knex.transaction(async trx => {
             try{
                 const char = await trx('char').insert({name, gender})
+                const allAttributes = await trx('attribute').select().pluck('id')
                 
-                const newAttributes = attributes.map((attribute: AttributeToCreate) => {
-                    const {attributeId, value} = attribute            
+                const newAttributes = allAttributes.map((attributeId: number) => {
+                    const filteredAttribute = attributes.find((attribute: AttributeToCreate) => attribute.attributeId === attributeId)
+
+                    if(!filteredAttribute)
+                        return {
+                            charId: char[0],
+                            attributeId,
+                            value: 0,
+                        }
+                        
                     return {
                         charId: char[0],
-                        attributeId,
-                        value: value ? value : 0,
-                    }    
+                        attributeId: filteredAttribute.attributeId,
+                        value: filteredAttribute.value ? filteredAttribute.value : 0,
+                    }
                 })
-                await trx('char_attribute').insert(newAttributes)
+
+                const teste = await trx('char_attribute').insert(newAttributes)
                 
                 res.json(defaultResponse)
             }catch(e) {
@@ -146,16 +156,22 @@ router.put('/edit', (req, res) => {
 
         knex.transaction(async trx => {
             try{
-                await trx('char')
-                    .where({id})
-                    .update({name, gender})
+                await trx('char').where({id}).update({name, gender})
                 
                 const newAttributes = attributes.map(async (attribute: AttributeToCreate) => {
-                    const {id: charAttId, value} = attribute  
+                    const {id: charAttId, attributeId, value} = attribute  
 
                     const newValue = value ? value : 0    
 
-                    await knex('char_attribute')
+                    if(!charAttId)
+                        return await knex('char_attribute')
+                            .insert({
+                                charId: id,
+                                attributeId,
+                                value: newValue
+                            }).transacting(trx)
+
+                    return await knex('char_attribute')
                         .where({id: charAttId})
                         .update({value: newValue})
                         .transacting(trx)

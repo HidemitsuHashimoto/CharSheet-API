@@ -9,6 +9,7 @@ export async function up(knex: Knex): Promise<void> {
 
 
 export async function down(knex: Knex): Promise<void> {
+    knex.delete()
     return knex.schema.alterTable('char_attribute', table => {
         table.dropUnique(['charId', 'attributeId'])
     })
