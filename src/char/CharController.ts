@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
 
         const newChars = await Promise.all(chars.map(async char => {
             const attributes = await knex('char_attribute')
-                .select()
+                .select(['char_attribute.id as id', 'attribute.id as attributeId', 'value', 'title'])
                 .innerJoin('attribute', 'attribute.id', 'char_attribute.attributeId')
                 .where({
                     charId: char.id
@@ -23,11 +23,35 @@ router.get('/', async (req, res) => {
         res.status(200).json({
             data: newChars,
             success: true,
-            message: ''
+            message: 'Consulta realizada com sucesso.'
         })
     }catch(e) {
         res.status(400).json({
             data: [],
+            success: false,
+            message: e
+        })
+    }
+})
+
+router.get('/:id', async (req, res) => {
+    const {id} = req.params
+
+    try{
+        const char = await knex('char').select().where({id})
+        const attributes = await knex('char_attribute')
+            .select(['char_attribute.id as id', 'attribute.id as attributeId', 'value', 'title'])
+            .innerJoin('attribute', 'attribute.id', 'char_attribute.attributeId')
+            .where({charId: id})
+
+        res.status(200).json({
+            data: {...char[0], attributes},
+            success: true,
+            message: 'Personagem encontrado com sucesso.'
+        })
+    }catch(e) {
+        res.status(400).json({
+            data: {},
             success: false,
             message: e
         })
@@ -43,9 +67,9 @@ router.post('/save', (req, res) => {
 
     const defaultResponse = {
         success: true,
-        message: 'Personagem criado com sucesso!',
+        mensagem: 'Personagem criado com sucesso!',
         attributeResponse: {
-            success: true, message: 'Attributos registrados com sucesso!', sample: '',
+            success: true, mensagem: 'Attributos registrados com sucesso!', sample: '',
         }
     }   
 
@@ -57,7 +81,7 @@ router.post('/save', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    message: 'Formato do attributo incorreto.',
+                    mensagem: 'Formato do attributo incorreto.',
                     sample: 'attributes: [{ attributeId: INTEGER, value: INTEGER }]',
                 },
             })
@@ -68,10 +92,10 @@ router.post('/save', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    message: 'O id do attributo é obrigatório!'
+                    mensagem: 'O id do attributo é obrigatório!'
                 },
             })
-        })    
+        })
 
         knex.transaction(async trx => {
             try{
@@ -79,7 +103,7 @@ router.post('/save', (req, res) => {
                 const allAttributes = await trx('attribute').select().pluck('id')
                 
                 const newAttributes = allAttributes.map((attributeId: number) => {
-                    const filteredAttribute = attributes.find((attribute: AttributeToCreate) => attribute.attributeId === attributeId)
+                    const filteredAttribute = attributes ? attributes.find((attribute: AttributeToCreate) => attribute.attributeId === attributeId) : false
 
                     if(!filteredAttribute)
                         return {
@@ -99,15 +123,14 @@ router.post('/save', (req, res) => {
                 
                 res.json(defaultResponse)
             }catch(e) {
-                trx.rollback()
                 res.status(400).json({
                     ...defaultResponse,
                     sucesso: false,
-                    mensagem: e.errors[0].message,
+                    mensagem: e,
                     attributeResponse: {
                         ...defaultResponse.attributeResponse,
                         success: false,
-                        message: '',
+                        mensagem: '',
                     },
                 })
             }            
@@ -124,9 +147,9 @@ router.put('/edit', (req, res) => {
 
     const defaultResponse = {
         success: true,
-        message: 'Personagem atualizado com sucesso!',
+        mensagem: 'Personagem atualizado com sucesso!',
         attributeResponse: {
-            success: true, message: 'Attributos atualizados com sucesso!', sample: '',
+            success: true, mensagem: 'Attributos atualizados com sucesso!', sample: '',
         }
     }   
 
@@ -138,7 +161,7 @@ router.put('/edit', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    message: 'Formato do attributo incorreto.',
+                    mensagem: 'Formato do attributo incorreto.',
                     sample: 'attributes: [{ attributeId: INTEGER, value: INTEGER }]',
                 },
             })
@@ -149,47 +172,73 @@ router.put('/edit', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    message: 'O id do attributo é obrigatório!'
+                    mensagem: 'O id do attributo é obrigatório!'
                 },
             })
         })
 
         knex.transaction(async trx => {
             try{
+                const searchedChar = await trx('char').select().where({id})
+
+                if(!searchedChar.length)
+                    throw 'O personagem escolhido não existe!'
+
                 await trx('char').where({id}).update({name, gender})
                 
-                const newAttributes = attributes.map(async (attribute: AttributeToCreate) => {
-                    const {id: charAttId, attributeId, value} = attribute  
+                if(attributes) {
+                    const newAttributes = attributes.map(async (attribute: AttributeToCreate) => {
+                        const {id: charAttId, attributeId, value} = attribute  
+    
+                        const newValue = value ? value : 0    
+    
+                        if(!charAttId)
+                            return await knex('char_attribute')
+                                .insert({
+                                    charId: id,
+                                    attributeId,
+                                    value: newValue
+                                }).transacting(trx)
 
-                    const newValue = value ? value : 0    
+                        const searchedAttribute = await knex('char_attribute')
+                            .select(['charId', 'attributeId'])
+                            .where({id: charAttId})
 
-                    if(!charAttId)
+                        if(!searchedAttribute.length)
+                            return await knex('char_attribute')
+                                .insert({
+                                    charId: id,
+                                    attributeId,
+                                    value: newValue
+                                }).transacting(trx)
+
+                        const filteredAttribute = searchedAttribute.find(attribute => {
+                            const {charId, attributeId: attributeIdFilter} = attribute
+                            return charId === id && attributeIdFilter === attributeId
+                        })
+
+                        if(!filteredAttribute)
+                            throw 'O id do atributo escolhido pertence a outro personagem!'
+    
                         return await knex('char_attribute')
-                            .insert({
-                                charId: id,
-                                attributeId,
-                                value: newValue
-                            }).transacting(trx)
-
-                    return await knex('char_attribute')
-                        .where({id: charAttId})
-                        .update({value: newValue})
-                        .transacting(trx)
-                })
-
-                await Promise.all(newAttributes)
+                            .where({id: charAttId})
+                            .update({value: newValue})
+                            .transacting(trx)
+                    })
+    
+                    await Promise.all(newAttributes)
+                }
                 
                 res.json(defaultResponse)
             }catch(e) {
-                trx.rollback()
                 res.status(400).json({
                     ...defaultResponse,
                     sucesso: false,
-                    mensagem: e.errors[0].message,
+                    mensagem: e,
                     attributeResponse: {
                         ...defaultResponse.attributeResponse,
                         success: false,
-                        message: '',
+                        mensagem: '',
                     },
                 })
             }            
