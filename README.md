@@ -25,16 +25,13 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 # Endpoints
 
 ## Personagens
-<br>
 
 ### GET - Lista de personagens
     http://localhost/char
-<br>
 
-#### Resposta Sucesso
 <hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Sucesso</summary>
 
 	{
 		"data": [
@@ -83,12 +80,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Erro
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Erro</summary>
 
 	{
 		"data": [],
@@ -103,10 +96,9 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 ### GET - Um Personagem
 #### ID = Chave primária do personagem
     http://localhost/char/id
-#### Resposta Sucesso
 <hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Sucesso</summary>
 
 	{
 		"data": {
@@ -134,12 +126,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Erro
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Erro</summary>
 
 	{
 		"data": {},
@@ -157,11 +145,9 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 *Os atributos não informados serão registrados com o valor 0*
 
     http://localhost/char/save
-
-#### Body
 <hr>
 <details>
-	<summary>Corpo da requisição</summary>
+	<summary>Body</summary>
 
 	{
 		"name": NOME DO PERSONAGEM (STRING),
@@ -176,12 +162,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Sucesso
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Sucesso</summary>
 
 	{
 		"success": true,
@@ -195,12 +177,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Erro
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Erro</summary>
 
 	{
 		"success": false,
@@ -222,11 +200,9 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 *Os atributos não informados serão registrados com o valor 0*
 
 	http://localhost/char/edit
-
-#### Body
 <hr>
 <details>
-	<summary>Corpo da requisição</summary>
+	<summary>Body</summary>
 
 	{
 		"id": ID DO PERSONAGEM (NUMBER),
@@ -243,12 +219,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Sucesso
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Sucesso</summary>
 
 	{
 		"success": true,
@@ -262,12 +234,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Erro
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Erro</summary>
 
 	{
 		"success": false,
@@ -288,11 +256,9 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 ### GET - Lista de atributos
 	http://localhost/attribute
-
-#### Resposta Sucesso
 <hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Sucesso</summary>
 	
 	{
 		"data": [
@@ -311,12 +277,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Erro
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Erro</summary>
 
 	{
 		"data": [],
@@ -328,13 +290,11 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 <hr>
 <br>
 
-### POST - Editar Personagem
+### POST - Editar Atributo
 	http://localhost/attribute/save
-
-#### Body
 <hr>
 <details>
-	<summary>Corpo da requisição</summary>
+	<summary>Body</summary>
 
 	{
 		"title": NOME DA ATRIBUIÇÃO (STRING)
@@ -342,12 +302,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Sucesso
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Sucesso</summary>
 
 	{
 		"success": true,
@@ -356,12 +312,8 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 
 </details>
 <hr>
-<br>
-
-#### Resposta Erro
-<hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Resposta Erro</summary>
 
 	{
 		"success": false,
