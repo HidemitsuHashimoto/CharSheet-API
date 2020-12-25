@@ -30,8 +30,8 @@ router.post('/save', (req, res) => {
             message: 'Registro incluído com sucesso.'
         }))
         .catch(error => res.status(400).json({
-            sucesso: false,
-            mensagem: error.errors[0].message
+            success: false,
+            message: error
         }))
 })
 

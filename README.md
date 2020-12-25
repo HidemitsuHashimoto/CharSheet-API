@@ -25,6 +25,7 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 # Endpoints
 
 ## Personagens
+<br>
 
 ### GET - Lista de personagens
     http://localhost/char
@@ -150,35 +151,48 @@ No prompt de comando navegue até a pasta do projeto e execute o comando:
 <hr>
 <br>
 
-### GET - Novo Personagem
-Os atributos são opcionais
+### POST - Novo Personagem
+*Os atributos são opcionais*
 
-Os atributos não informados serão registrados com o valor 0
+*Os atributos não informados serão registrados com o valor 0*
 
     http://localhost/char/save
 
 #### Body
 <hr>
 <details>
-	<summary>Exemplo</summary>
+	<summary>Corpo da requisição</summary>
 
 	{
-		"name": "Busao",
-		"gender": "F",
+		"name": NOME DO PERSONAGEM (STRING),
+		"gender": ENUM("M", "F", "O"),
 		"attributes": [
 			{
-			"attributeId": 1,
-			"value": 150
+				"attributeId": NÚMERO DO ATRIBUTO (NUMBER),
+				"value": VALOR DO ATRIBUTO (NUMBER)
 			}
 		]
 	}
 
 </details>
 <hr>
+<br>
+
 #### Resposta Sucesso
 <hr>
 <details>
 	<summary>Exemplo</summary>
+
+	{
+		"success": true,
+		"message": "Mensagem de sucesso",
+		"attributeResponse": {
+			"success": true,
+			"message": "Mensagem de sucesso",
+			"sample": ""
+		}
+	}
+
 </details>
 <hr>
 <br>
@@ -187,7 +201,173 @@ Os atributos não informados serão registrados com o valor 0
 <hr>
 <details>
 	<summary>Exemplo</summary>
+
+	{
+		"success": false,
+		"message": "Mensagem de erro",
+		"attributeResponse": {
+			"success": false,
+			"message": "Mensagem de erro",
+			"sample": "Exemplo do formato que deve ser enviado"
+		}
+	}
+
 </details>
 <hr>
+<br>
+
+### PUT - Editar Personagem
+*Os atributos são opcionais*
+
+*Os atributos não informados serão registrados com o valor 0*
+
+	http://localhost/char/edit
+
+#### Body
+<hr>
+<details>
+	<summary>Corpo da requisição</summary>
+
+	{
+		"id": ID DO PERSONAGEM (NUMBER),
+		"name": NOME DO PERSONAGEM (STRING),
+		"gender": ENUM("M", "F", "O"),
+		"attributes": [
+			{
+				"id": ID DO ATRIBUTO (NUMBER),
+				"attributeId": NÚMERO DO ATRIBUTO (NUMBER),
+				"value": VALOR DO ATRIBUTO (NUMBER)
+			}
+		]
+	}
+
+</details>
+<hr>
+<br>
+
+#### Resposta Sucesso
+<hr>
+<details>
+	<summary>Exemplo</summary>
+
+	{
+		"success": true,
+		"mensagem": "Mensagem de sucesso",
+		"attributeResponse": {
+			"success": true,
+			"mensagem": "Mensagem de sucesso",
+			"sample": ""
+		}
+	}
+
+</details>
+<hr>
+<br>
+
+#### Resposta Erro
+<hr>
+<details>
+	<summary>Exemplo</summary>
+
+	{
+		"success": false,
+		"mensagem": "Mensagem de erro",
+		"attributeResponse": {
+			"success": false,
+			"mensagem": "Mensagem de erro",
+			"sample": "Exemplo do formato que deve ser enviado"
+		}
+	}
+
+</details>
+<hr>
+<br>
 
 ## Atributos
+<br>
+
+### GET - Lista de atributos
+	http://localhost/attribute
+
+#### Resposta Sucesso
+<hr>
+<details>
+	<summary>Exemplo</summary>
+	
+	{
+		"data": [
+			{
+				"id": 1,
+				"title": "Força"
+			},
+			{
+				"id": 2,
+				"title": "Inteligência"
+			}
+		],
+		"success": true,
+		"message": ""
+	}
+
+</details>
+<hr>
+<br>
+
+#### Resposta Erro
+<hr>
+<details>
+	<summary>Exemplo</summary>
+
+	{
+		"data": [],
+		"success": false,
+		"message": "Mensagem de erro"
+	}
+
+</details>
+<hr>
+<br>
+
+### POST - Editar Personagem
+	http://localhost/attribute/save
+
+#### Body
+<hr>
+<details>
+	<summary>Corpo da requisição</summary>
+
+	{
+		"title": NOME DA ATRIBUIÇÃO (STRING)
+	}
+
+</details>
+<hr>
+<br>
+
+#### Resposta Sucesso
+<hr>
+<details>
+	<summary>Exemplo</summary>
+
+	{
+		"success": true,
+		"message": "Mensagem de sucesso"
+	}
+
+</details>
+<hr>
+<br>
+
+#### Resposta Erro
+<hr>
+<details>
+	<summary>Exemplo</summary>
+
+	{
+		"success": false,
+		"message": "Mensagem de erro"
+	}
+
+</details>
+<hr>
+<br>

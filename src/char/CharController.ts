@@ -67,9 +67,9 @@ router.post('/save', (req, res) => {
 
     const defaultResponse = {
         success: true,
-        mensagem: 'Personagem criado com sucesso!',
+        message: 'Personagem criado com sucesso!',
         attributeResponse: {
-            success: true, mensagem: 'Attributos registrados com sucesso!', sample: '',
+            success: true, message: 'Attributos registrados com sucesso!', sample: '',
         }
     }   
 
@@ -81,7 +81,7 @@ router.post('/save', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    mensagem: 'Formato do attributo incorreto.',
+                    message: 'Formato do attributo incorreto.',
                     sample: 'attributes: [{ attributeId: INTEGER, value: INTEGER }]',
                 },
             })
@@ -92,7 +92,7 @@ router.post('/save', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    mensagem: 'O id do attributo é obrigatório!'
+                    message: 'O id do attributo é obrigatório!'
                 },
             })
         })
@@ -125,12 +125,12 @@ router.post('/save', (req, res) => {
             }catch(e) {
                 res.status(400).json({
                     ...defaultResponse,
-                    sucesso: false,
-                    mensagem: e,
+                    success: false,
+                    message: e,
                     attributeResponse: {
                         ...defaultResponse.attributeResponse,
                         success: false,
-                        mensagem: '',
+                        message: '',
                     },
                 })
             }            
@@ -147,9 +147,9 @@ router.put('/edit', (req, res) => {
 
     const defaultResponse = {
         success: true,
-        mensagem: 'Personagem atualizado com sucesso!',
+        message: 'Personagem atualizado com sucesso!',
         attributeResponse: {
-            success: true, mensagem: 'Attributos atualizados com sucesso!', sample: '',
+            success: true, message: 'Attributos atualizados com sucesso!', sample: '',
         }
     }   
 
@@ -161,7 +161,7 @@ router.put('/edit', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    mensagem: 'Formato do attributo incorreto.',
+                    message: 'Formato do attributo incorreto.',
                     sample: 'attributes: [{ attributeId: INTEGER, value: INTEGER }]',
                 },
             })
@@ -172,7 +172,7 @@ router.put('/edit', (req, res) => {
                 attributeResponse: {
                     ...defaultResponse.attributeResponse,
                     success: false,
-                    mensagem: 'O id do attributo é obrigatório!'
+                    message: 'O id do attributo é obrigatório!'
                 },
             })
         })
@@ -233,12 +233,12 @@ router.put('/edit', (req, res) => {
             }catch(e) {
                 res.status(400).json({
                     ...defaultResponse,
-                    sucesso: false,
-                    mensagem: e,
+                    success: false,
+                    message: e,
                     attributeResponse: {
                         ...defaultResponse.attributeResponse,
                         success: false,
-                        mensagem: '',
+                        message: '',
                     },
                 })
             }            
