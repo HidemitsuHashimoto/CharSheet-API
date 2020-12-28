@@ -119,7 +119,7 @@ router.post('/save', (req, res) => {
                     }
                 })
 
-                const teste = await trx('char_attribute').insert(newAttributes)
+                await trx('char_attribute').insert(newAttributes)
                 
                 res.json(defaultResponse)
             }catch(e) {
