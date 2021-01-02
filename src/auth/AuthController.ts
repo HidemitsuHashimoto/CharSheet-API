@@ -24,7 +24,7 @@ router.post('/', async (req, res) => {
         const token = jwt.sign({
             email: findedUser[0].email,
             password: findedUser[0].password
-        }, secret)
+        }, secret, {expiresIn: '1d'})
 
         res.status(200).json({
             success: true,
